@@ -1,0 +1,72 @@
+
+
+#include <Arduino.h>
+#include <U8g2lib.h>
+
+#include <Wire.h> // library requires for IIC communication
+
+
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE); // initialization for the used OLED display
+
+static const unsigned char image_Pressed_Button_13x13_bits[] U8X8_PROGMEM = {0xf0,0x01,0xfc,0x07,0xfe,0x0f,0xfe,0x0f,0xff,0x1f,0xff,0x1f,0xff,0x1f,0xff,0x1f,0xff,0x1f,0xfe,0x0f,0xfe,0x0f,0xfc,0x07,0xf0,0x01};
+int img[] = {12,15,13,13};
+int bounds[] = {11,113,14,53};
+//Buttoons
+int right = 2;
+int left = 3;
+int up = 4;
+int down = 5;
+
+
+
+void setup() {
+  u8g2.begin(); // start the u8g2 library
+
+  pinMode(right, INPUT_PULLUP);
+  pinMode(left, INPUT_PULLUP);
+  pinMode(up, INPUT_PULLUP);
+  pinMode(down, INPUT_PULLUP);
+}
+
+void loop() {
+if((digitalRead(right) == 0)&(img[0]<bounds[1]-img[2])){
+  img[0] = img[0]+2;
+}
+else if((digitalRead(left) == 0)&(img[0]>bounds[0]+1)){
+  img[0] = img[0]-2;
+}
+if((digitalRead(down) == 0)&(img[1]<39)){
+  img[1] = img[1]+2;
+}
+else if((digitalRead(up) == 0)&(img[1]>bounds[2]+1)){
+  img[1] = img[1]-2;
+}
+
+
+  screenref();
+delay(10);
+}
+
+
+
+void screenref(){
+
+u8g2.clearBuffer();					// clear the internal memory
+u8g2.setBitmapMode(1);
+
+//Stage
+u8g2.drawFrame(8, 11, 109, 46);
+u8g2.drawFrame(11, 14, 103, 39);
+u8g2.setFont(u8g2_font_haxrcorp4089_tr);
+u8g2.drawStr(3, 10, "Ball Wall");
+
+
+u8g2.drawXBMP( img[0], img[1], img[2], img[3], image_Pressed_Button_13x13_bits);
+
+
+
+
+
+u8g2.sendBuffer();					// transfer internal memory to the display
+
+}
